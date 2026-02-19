@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario para telegram</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <script src="jquery.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <style>
+        body{
+            background: #dee0e9;
+        }
+    </style>
+    <link rel="stylesheet" href="fonts/css/all.css">
+    <script src="fonts/js/all.js"></script>
+
+    <link rel="stylesheet" href="sweetalert/sweetalert.min.css">
+    <script src="sweetalert/sweetalert.min.js"></script>
+
+</head>
+<body>
+    <div class="container mt-5">
+        
+        <div class="row justify-content-center">
+            <div class="col-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fa-brands fa-telegram"></i> <b>Envio de mensaje - Telegram</b>
+                    </div>
+                    <div class="card-body">
+                        <form action="" id="form-telegram">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for=""><b>Api telegram - token</b></label>
+                                    <input type="text" name="apiToken" id="apiToken" class="form-control" placeholder="example:bot465465465456:example">
+                                </div>
+                                <div class="col-6">
+                                    <label for=""><b>Chat ID - telegram</b></label>
+                                    <input type="text" name="chatId" id="chatId" class="form-control" placeholder="example:@mygrupo">
+                                </div>
+
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-12">
+                                    <label for=""><b>Nombre</b></label>
+                                    <input type="text" name="name" id="nameInput" class="form-control" placeholder="Ingrese un nombre">
+                                </div>
+        
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for=""><b>Correo</b></label>
+                                    <input type="text" name="email" id="emailInput" placeholder="Ingrese un correo" class="form-control">
+                                </div>
+                                <div class="col-6">
+                                    <label for=""><b>Telefono</b></label>
+                                    <input type="text" name="phone"  id="phoneInput" placeholder="Ingrese un telefono" class="form-control">
+                                </div>
+        
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-12">
+                                    <label for=""><b>Descripción del mensaje</b></label>
+                                    <textarea name="description" id="descriptionInput" cols="30" rows="10" class="form-control"></textarea>
+                                </div>
+        
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <a href="#" class="btn btn-primary send-telegram" ><i class="fa-solid fa-paper-plane"></i> Enviar</a>
+                                    
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                  </div>
+               
+            </div>
+        </div>
+    </div>
+
+    <script>
+      
+        $(document).on('click','.send-telegram',function(event){
+            event.preventDefault();
+            //VARIABLES NECESARIAS PARA LA API DE TELEGRAM
+            let tokenbot = $('#apiToken').val();
+            let chatId = $('#chatId').val();
+            let name = $('#nameInput').val();
+            let email = $('#emailInput').val();
+            let phone = $('#phoneInput').val();
+            let description = $('#descriptionInput').val();
+
+            if(tokenbot == '' || chatId == ''){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Los campos de configuracion, no deben estar vacios ',
+                    text: 'El campo de Api telegram - token y chatID no pueden estar vacios',
+                });
+
+                return;
+            }
+
+            if(name === '' && email === '' && phone === '' && description === ''  ){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Debe llenar uno o mas campos ',
+                    text: 'Por favor los relle uno o mas datos de contacto',
+                });
+
+                return;
+            }
+
+            //MENSAJE PARA EL GRUPO DE TELEGRAM
+            let message = `<b>Formulario de pruebas - telegram</b> %0A Nombre: <b>${name}</b>%0A Correo: <b>${email}</b> %0A Telefono: <b>${phone}</b>  %0A Descripcion: <b>${description}</b>`; 
+
+            $.ajax({
+                url:`https://api.telegram.org/bot${tokenbot}/sendMessage?chat_id=${chatId}&text=${message}&parse_mode=HTML`,
+                type: 'GET',
+            })
+            .done(function(response) {
+                if(response.ok){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Excelente.!',
+                        text: 'Mensaje enviado correctamente',
+                    });
+                    $('#form-telegram')[0].reset();
+
+                
+                }
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                if (jqXHR.status === 422 ) {
+                    alert('error al realizar la consulta')
+                }
+            })
+        });
+    </script>
+</body>
+</html>
